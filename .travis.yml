@@ -1,0 +1,24 @@
+language: objective-c
+osx_image: xcode9.4
+
+env:
+  global:
+  - NODE_VERSION="8.9.1"
+
+install:
+- brew tap wix/brew
+- brew install applesimutils
+- curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+- export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+- nvm install $NODE_VERSION
+- nvm use $NODE_VERSION
+
+- npm cache clean -f
+- npm install -g react-native-cli
+- npm install -g detox-cli
+- npm install
+- cd ios && pod install --repo-update && cd ../
+
+script:
+- detox build --configuration ios.sim.release
+- detox test --configuration ios.sim.release --cleanup
